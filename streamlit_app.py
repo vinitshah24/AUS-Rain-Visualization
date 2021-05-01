@@ -169,6 +169,7 @@ def get_rainfall_timeseries_map(map_df):
 
 
 def get_predictions():
+    data = load_data()
     saved_model = load_model('rf_model')
     st.write("## Predict Rainfall")
     st.write("Predictions Based on Trained Random Forest Classifer Model")
@@ -180,22 +181,36 @@ def get_predictions():
     # input_data = [[3, 13, 22, 0.6, 5.4, 7.6, 13, 44, 70, 22,
     #                1007.2, 1007.1, 8.0, 21.8, 16.2, 21.7, 0]]
     col1, col2 = st.beta_columns(2)
-    Location_cat = col1.text_input("Location_cat", 3)
-    MinTemp = col1.text_input("MinTemp", 13)
-    MaxTemp = col1.text_input("MaxTemp", 22)
-    Rainfall = col1.text_input("Rainfall", 0.6)
-    Evaporation = col1.text_input("Evaporation", 5.4)
-    Sunshine = col1.text_input("Sunshine", 7.6)
-    WindGustDir_cat = col1.text_input("WindGustDir_cat", 13)
-    WindGustSpeed = col1.text_input("WindGustSpeed", 44)
-    Humidity9am = col2.text_input("Humidity9am", 70)
-    Humidity3pm = col2.text_input("Humidity3pm", 22)
-    Pressure9am = col2.text_input("Pressure9am", 1007)
-    Pressure3pm = col2.text_input("Pressure3pm", 1007)
-    Cloud9am = col2.text_input("Cloud9am", 8.0)
-    Cloud3pm = col2.text_input("Cloud3pm", 21.5)
-    Temp9am = col2.text_input("Temp9am", 16.5)
-    Temp3pm = col2.text_input("Temp3pm", 21.0)
+    Location_cat = col1.text_input("Location_cat", 0)
+    MinTemp = col1.slider("MinTemp",
+                          data.MinTemp.min(), data.MinTemp.max(), 9.7, step=0.1)
+    MaxTemp = col1.slider("MaxTemp",
+                          data.MaxTemp.min(), data.MaxTemp.max(), 31.9, step=0.1)
+    Rainfall = col1.slider("Rainfall",
+                           data.Rainfall.min(), data.Rainfall.max(), 0.0, step=0.1)
+    Evaporation = col1.slider("Evaporation",
+                              data.Evaporation.min(), data.Evaporation.max(), 5.4, step=0.1)
+    Sunshine = col1.slider("Sunshine",
+                           data.Sunshine.min(), data.Sunshine.max(), 7.6, step=0.1)
+    WindGustDir_cat = col1.text_input("WindGustDir_cat", 6)
+    WindGustSpeed = col1.slider("WindGustSpeed",
+                                data.WindGustSpeed.min(), data.WindGustSpeed.max(), 80.0, step=0.1)
+    Humidity9am = col2.slider("Humidity9am",
+                              data.Humidity9am.min(), data.Humidity9am.max(), 42.0, step=0.1)
+    Humidity3pm = col2.slider("Humidity3pm",
+                              data.Humidity3pm.min(), data.Humidity3pm.max(), 9.0, step=0.1)
+    Pressure9am = col2.slider("Pressure9am",
+                              data.Pressure9am.min(), data.Pressure9am.max(), 1008.9, step=0.1)
+    Pressure3pm = col2.slider("Pressure3pm",
+                              data.Pressure3pm.min(), data.Pressure3pm.max(), 1003.6, step=0.1)
+    Cloud9am = col2.slider("Cloud9am",
+                           data.Cloud9am.min(), data.Cloud9am.max(), 4.4474612602152455, step=0.1)
+    Cloud3pm = col2.slider("Cloud3pm",
+                           data.Cloud3pm.min(), data.Cloud3pm.max(), 4.509930082924903, step=0.1)
+    Temp9am = col2.slider("Temp9am",
+                          data.Temp9am.min(), data.Temp9am.max(), 18.3, step=0.1)
+    Temp3pm = col2.slider("Temp3pm",
+                          data.Temp3pm.min(), data.Temp3pm.max(), 30.2, step=0.1)
     RainToday_cat = col2.text_input("RainToday_cat", 0)
     input_data = [[Location_cat, MinTemp, MaxTemp, Rainfall, Evaporation, Sunshine,
                    WindGustDir_cat, WindGustSpeed, Humidity9am, Humidity3pm,
