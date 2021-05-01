@@ -14,6 +14,28 @@ import pandas as pd
 
 from PIL import Image
 
+st.markdown(
+    """
+    <style>
+    .reportview-container {
+        background-image: url("https://d8st7idcnjoas.cloudfront.net/galfull/DPF-204.jpg");
+        background-position: bottom;
+        background-repeat: no-repeat;
+        background-size: cover;
+        width: 100%;
+    }
+   .sidebar .sidebar-content {
+        background-color: black;
+    }
+    h1,h2,h3,h4,p {
+        color: rgb(0, 0, 0);
+    }
+    .css-1l02zno {
+    background-color: #cce6ff;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 
 @st.cache
 def load_data():
@@ -157,23 +179,24 @@ def get_predictions():
                   'Temp9am', 'Temp3pm', 'RainToday_cat']
     # input_data = [[3, 13, 22, 0.6, 5.4, 7.6, 13, 44, 70, 22,
     #                1007.2, 1007.1, 8.0, 21.8, 16.2, 21.7, 0]]
-    Location_cat = st.text_input("Location_cat", 3)
-    MinTemp = st.text_input("MinTemp", 13)
-    MaxTemp = st.text_input("MaxTemp", 22)
-    Rainfall = st.text_input("Rainfall", 0.6)
-    Evaporation = st.text_input("Evaporation", 5.4)
-    Sunshine = st.text_input("Sunshine", 7.6)
-    WindGustDir_cat = st.text_input("WindGustDir_cat", 13)
-    WindGustSpeed = st.text_input("WindGustSpeed", 44)
-    Humidity9am = st.text_input("Humidity9am", 70)
-    Humidity3pm = st.text_input("Humidity3pm", 22)
-    Pressure9am = st.text_input("Pressure9am", 1007)
-    Pressure3pm = st.text_input("Pressure3pm", 1007)
-    Cloud9am = st.text_input("Cloud9am", 8.0)
-    Cloud3pm = st.text_input("Cloud3pm", 21.5)
-    Temp9am = st.text_input("Temp9am", 16.5)
-    Temp3pm = st.text_input("Temp3pm", 21.0)
-    RainToday_cat = st.text_input("RainToday_cat", 0)
+    col1, col2 = st.beta_columns(2)
+    Location_cat = col1.text_input("Location_cat", 3)
+    MinTemp = col1.text_input("MinTemp", 13)
+    MaxTemp = col1.text_input("MaxTemp", 22)
+    Rainfall = col1.text_input("Rainfall", 0.6)
+    Evaporation = col1.text_input("Evaporation", 5.4)
+    Sunshine = col1.text_input("Sunshine", 7.6)
+    WindGustDir_cat = col1.text_input("WindGustDir_cat", 13)
+    WindGustSpeed = col1.text_input("WindGustSpeed", 44)
+    Humidity9am = col2.text_input("Humidity9am", 70)
+    Humidity3pm = col2.text_input("Humidity3pm", 22)
+    Pressure9am = col2.text_input("Pressure9am", 1007)
+    Pressure3pm = col2.text_input("Pressure3pm", 1007)
+    Cloud9am = col2.text_input("Cloud9am", 8.0)
+    Cloud3pm = col2.text_input("Cloud3pm", 21.5)
+    Temp9am = col2.text_input("Temp9am", 16.5)
+    Temp3pm = col2.text_input("Temp3pm", 21.0)
+    RainToday_cat = col2.text_input("RainToday_cat", 0)
     input_data = [[Location_cat, MinTemp, MaxTemp, Rainfall, Evaporation, Sunshine,
                    WindGustDir_cat, WindGustSpeed, Humidity9am, Humidity3pm,
                    Pressure9am, Pressure3pm, Cloud9am, Cloud3pm, Temp9am, Temp3pm,
