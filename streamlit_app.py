@@ -93,6 +93,15 @@ def get_rain_bar_chart(df):
     return fig
 
 
+def get_evaporation_scatter_chart(df):
+    loc_evaporation = df[["Location", "Evaporation"]].groupby("Location").mean()
+    loc_evaporation.sort_values(by="Evaporation", inplace=True)
+    labels = {"Evaporation": "mm/h", "Location": "Location Names"}
+    fig = px.scatter(loc_evaporation, labels=labels,
+                     color_discrete_sequence=['lightcoral'])
+    return fig
+
+
 def get_weather_map(map_data):
     date = map_data["Date"]
     date_choice = st.selectbox("Select date:", date)
@@ -253,6 +262,10 @@ if st.sidebar.checkbox("Show Rainfall"):
     placeholder.empty()
     st.write("## Cities with Rainfall:")
     st.plotly_chart(get_rain_bar_chart(data))
+if st.sidebar.checkbox("Show Evaporation"):
+    placeholder.empty()
+    st.write("## Evaporation rate of the Cities:")
+    st.plotly_chart(get_evaporation_scatter_chart(data))
 st.sidebar.header("Maps:")
 if st.sidebar.checkbox("Show Temp Map"):
     placeholder.empty()
