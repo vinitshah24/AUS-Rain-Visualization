@@ -102,6 +102,53 @@ def get_evaporation_scatter_chart(df):
     return fig
 
 
+def get_wind_speed_plot(df):
+    df = df.iloc[:500, :]
+    plt.figure(figsize=[20, 20])
+    plt.subplot(311)
+    plt.plot(df['Date'], df['WindSpeed9am'],
+             color='blue',
+             linewidth=2,
+             label='WindSpeed9am')
+    plt.legend(loc='upper right')
+    plt.title('Wind Gust Speed at 9AM')
+    plt.subplot(312)
+    plt.plot(df['Date'], df['WindSpeed3pm'],
+             color='green',
+             linewidth=2,
+             label='WindSpeed3pm')
+    plt.legend(loc='upper right')
+    plt.title('Wind Gust Speed at 3PM')
+    plt.subplot(313)
+    plt.plot(df['Date'], df['WindGustSpeed'],
+             color='violet',
+             linewidth=2,
+             label='WindGustSpeed')
+    plt.legend(loc='upper right')
+    plt.title('Wind Gust Speed')
+    return plt
+
+
+def max_temp_evaporation_plot(df):
+    plt.figure(figsize=(5, 5))
+    sns.jointplot(data=df, x='MaxTemp', y='Evaporation', bins=100,
+                  kind='hex', gridsize=30, marginal_kws={'color': '#e76f51'})
+    plt.rcParams.update({'figure.figsize': (10, 8), 'figure.dpi': 200})
+    plt.xlabel('MaxTemp', fontsize=13, labelpad=15)
+    plt.ylabel('Evaporation', fontsize=13, labelpad=15)
+    return plt
+
+
+def get_humidity_plot(df):
+    df = df.iloc[:100]
+    plt.figure(figsize=[20, 7])
+    plt.plot(df['Date'], df['WindSpeed9am'], linewidth=2, label='WindSpeed9am')
+    plt.plot(df['Date'], df['WindSpeed3pm'], linewidth=2, label='WindSpeed3pm')
+    plt.legend(loc='upper left')
+    plt.title('Humidity9am vs Humidity3pm by Date')
+    return plt
+
+
 def get_weather_map(map_data):
     date = map_data["Date"]
     date_choice = st.selectbox("Select date:", date)
@@ -137,8 +184,6 @@ def get_weather_map(map_data):
             tool_tip += f"Cloud9am: {date_df.iloc[i]['Cloud9am']}<br/>"
         if "Temp9am" in col_option:
             tool_tip += f"Temp9am: {date_df.iloc[i]['Temp9am']}<br/>"
-        # "MinTemp: " + str(date_df.iloc[i]["MinTemp"]) +
-        #             "<br/> MaxTemp: " + str(date_df.iloc[i]["MaxTemp"])
         folium.Marker(
             location=[date_df.iloc[i]["lat"], date_df.iloc[i]["lng"]],
             tooltip=tool_tip,
@@ -177,9 +222,7 @@ def get_rainfall_timeseries_map(map_df):
     return ts_rain_map
 
 
-def get_predictions():
-    data = load_data()
-    saved_model = load_model('rf_model')
+def get_predictions(saved_model):
     st.write("## Predict Rainfall")
     st.write("Predictions Based on Trained Random Forest Classifer Model")
     input_cols = ['Location_cat', 'MinTemp', 'MaxTemp', 'Rainfall',
@@ -187,46 +230,47 @@ def get_predictions():
                   'WindGustSpeed', 'Humidity9am', 'Humidity3pm',
                   'Pressure9am', 'Pressure3pm', 'Cloud9am', 'Cloud3pm',
                   'Temp9am', 'Temp3pm', 'RainToday_cat']
-    # input_data = [[3, 13, 22, 0.6, 5.4, 7.6, 13, 44, 70, 22,
-    #                1007.2, 1007.1, 8.0, 21.8, 16.2, 21.7, 0]]
     col1, col2 = st.beta_columns(2)
-    Location_cat = col1.text_input("Location_cat", 0)
-    MinTemp = col1.slider("MinTemp",
+    col3_row1, col3_row2, col3_row3 = st.beta_columns(3)
+    MinTemp = col1.slider("Mininum Tempreature",
                           data.MinTemp.min(), data.MinTemp.max(), 9.7, step=0.1)
-    MaxTemp = col1.slider("MaxTemp",
+    MaxTemp = col2.slider("Maximum Tempreature",
                           data.MaxTemp.min(), data.MaxTemp.max(), 31.9, step=0.1)
     Rainfall = col1.slider("Rainfall",
                            data.Rainfall.min(), data.Rainfall.max(), 0.0, step=0.1)
-    Evaporation = col1.slider("Evaporation",
+    Evaporation = col2.slider("Evaporation",
                               data.Evaporation.min(), data.Evaporation.max(), 5.4, step=0.1)
     Sunshine = col1.slider("Sunshine",
                            data.Sunshine.min(), data.Sunshine.max(), 7.6, step=0.1)
-    WindGustDir_cat = col1.text_input("WindGustDir_cat", 6)
-    WindGustSpeed = col1.slider("WindGustSpeed",
+    WindGustSpeed = col2.slider("Wind Gust Speed",
                                 data.WindGustSpeed.min(), data.WindGustSpeed.max(), 80.0, step=0.1)
-    Humidity9am = col2.slider("Humidity9am",
+    Humidity9am = col1.slider("Humidity at 9am",
                               data.Humidity9am.min(), data.Humidity9am.max(), 42.0, step=0.1)
-    Humidity3pm = col2.slider("Humidity3pm",
+    Humidity3pm = col2.slider("Humidity at 3pm",
                               data.Humidity3pm.min(), data.Humidity3pm.max(), 9.0, step=0.1)
-    Pressure9am = col2.slider("Pressure9am",
+    Pressure9am = col1.slider("Wind Pressure at 9am",
                               data.Pressure9am.min(), data.Pressure9am.max(), 1008.9, step=0.1)
-    Pressure3pm = col2.slider("Pressure3pm",
+    Pressure3pm = col2.slider("Wind Pressure at 3pm",
                               data.Pressure3pm.min(), data.Pressure3pm.max(), 1003.6, step=0.1)
-    Cloud9am = col2.slider("Cloud9am",
+    Cloud9am = col1.slider("Cloud at 9am",
                            data.Cloud9am.min(), data.Cloud9am.max(), 4.4474612602152455, step=0.1)
-    Cloud3pm = col2.slider("Cloud3pm",
+    Cloud3pm = col2.slider("Cloud at 3pm",
                            data.Cloud3pm.min(), data.Cloud3pm.max(), 4.509930082924903, step=0.1)
-    Temp9am = col2.slider("Temp9am",
+    Temp9am = col1.slider("Tempreature at 9am",
                           data.Temp9am.min(), data.Temp9am.max(), 18.3, step=0.1)
-    Temp3pm = col2.slider("Temp3pm",
+    Temp3pm = col2.slider("Tempreature at 3pm",
                           data.Temp3pm.min(), data.Temp3pm.max(), 30.2, step=0.1)
-    RainToday_cat = col2.text_input("RainToday_cat", 0)
-    input_data = [[Location_cat, MinTemp, MaxTemp, Rainfall, Evaporation, Sunshine,
-                   WindGustDir_cat, WindGustSpeed, Humidity9am, Humidity3pm,
+    Location_cat = col3_row1.selectbox("City Location", data.Location.unique())
+    WindGustDir_cat = col3_row2.selectbox("Wind Gust Direction", data.WindGustDir.unique())
+    RainToday_cat = col3_row3.selectbox("Did it Rain Today?", data.RainToday.unique())
+    Location_index = np.where(data.Location.unique() == Location_cat)[0][0]
+    WindGustDir_index = np.where(data.WindGustDir.unique() == WindGustDir_cat)[0][0]
+    RainToday_index = np.where(data.RainToday.unique() == RainToday_cat)[0][0]
+    input_data = [[Location_index, MinTemp, MaxTemp, Rainfall, Evaporation, Sunshine,
+                   WindGustDir_index, WindGustSpeed, Humidity9am, Humidity3pm,
                    Pressure9am, Pressure3pm, Cloud9am, Cloud3pm, Temp9am, Temp3pm,
-                   RainToday_cat]]
+                   RainToday_index]]
     input_df = pd.DataFrame(input_data, columns=input_cols)
-    st.write(input_df)
     predictions = predict_model(saved_model, data=input_df)
     rain_tomorrow = int(predictions["Label"])
     return rain_tomorrow
@@ -239,48 +283,65 @@ placeholder = st.image(image)
 
 data = load_data()
 map_data = load_map_data()
+saved_model = load_model('rf_model')
 
 st.sidebar.header("Dataset:")
 if st.sidebar.checkbox("Show Data"):
     placeholder.empty()
-    st.write("## Dataset:")
+    st.write("## Dataset")
     st.write(data.head())
+
 if st.sidebar.checkbox("Show Feature Correlations"):
     placeholder.empty()
-    st.write("## Features Correlation:")
+    st.write("## Features Correlation")
     st.pyplot(get_corr_heatmap(data))
+
 st.sidebar.header("Features:")
 if st.sidebar.checkbox("Show Max Tempreature"):
     placeholder.empty()
-    st.write("## Cities with High Tempreature:")
+    st.write("## Cities with High Tempreature")
     st.plotly_chart(get_max_temp_bar_chart(data))
 if st.sidebar.checkbox("Show Min Tempreature"):
     placeholder.empty()
-    st.write("## Cities with Minimum Tempreature:")
+    st.write("## Cities with Minimum Tempreature")
     st.plotly_chart(get_min_temp_bar_chart(data))
 if st.sidebar.checkbox("Show Rainfall"):
     placeholder.empty()
-    st.write("## Cities with Rainfall:")
+    st.write("## Rainfall Rate")
     st.plotly_chart(get_rain_bar_chart(data))
 if st.sidebar.checkbox("Show Evaporation"):
     placeholder.empty()
-    st.write("## Evaporation rate of the Cities:")
+    st.write("## Evaporation Rate")
     st.plotly_chart(get_evaporation_scatter_chart(data))
+if st.sidebar.checkbox("Show Wind Speed"):
+    placeholder.empty()
+    st.write("## Wind Speed")
+    st.pyplot(get_wind_speed_plot(data))
+if st.sidebar.checkbox("Show Humidity"):
+    placeholder.empty()
+    st.write("## Wind Humidity")
+    st.pyplot(get_humidity_plot(data))
+if st.sidebar.checkbox("Show Comparisons"):
+    placeholder.empty()
+    st.write("## Max Tempreature vs Evaporation")
+    st.pyplot(max_temp_evaporation_plot(data))
+
 st.sidebar.header("Maps:")
 if st.sidebar.checkbox("Show Temp Map"):
     placeholder.empty()
-    st.write("## Cities Map with Weather Markers:")
+    st.write("## Cities Map with Weather Markers")
     aus_plot = get_weather_map(map_data)
     folium_static(aus_plot)
 if st.sidebar.checkbox("Show Rainfall Timeseries Map"):
     placeholder.empty()
-    st.write("## Rainfall Timeseries:")
+    st.write("## Rainfall Timeseries")
     timeseries_plot = get_rainfall_timeseries_map(map_data)
     folium_static(timeseries_plot)
+
 st.sidebar.header("Rainfall Prediction:")
 if st.sidebar.checkbox("Predict"):
     placeholder.empty()
-    rain_tomorrow = get_predictions()
+    rain_tomorrow = get_predictions(saved_model)
     if int(rain_tomorrow) == 0:
         st.write("## It will not rain tomorrow!")
     else:
