@@ -212,7 +212,7 @@ def get_wind_dir_plot(df):
 
 def get_weather_map(map_data):
     date = map_data["Date"]
-    date_choice = st.selectbox("Select date:", date)
+    date_choice = st.selectbox("Select date", date)
     date_df = map_data.loc[map_data.Date == date_choice]
     cols = ["MinTemp", "MaxTemp", "Rainfall", "Evaporation", "Sunshine", "WindGustSpeed",
             "WindSpeed9am", "Humidity9am", "Pressure9am", "Cloud9am", "Temp9am"]
@@ -339,14 +339,14 @@ def get_predictions(saved_model):
 
 # Main
 st.title("Australia Rain Prediction")
-image = Image.open("data/aus_climate.jpg")
+image = Image.open("data/plots.jpg")
 placeholder = st.image(image)
 
 data = load_data()
 map_data = load_map_data()
 saved_model = load_model('rf_model')
 
-st.sidebar.header("Dataset:")
+st.sidebar.header("Dataset")
 if st.sidebar.checkbox("Show Data"):
     placeholder.empty()
     st.write("## Dataset")
@@ -357,7 +357,7 @@ if st.sidebar.checkbox("Show Feature Correlations"):
     st.write("## Features Correlation")
     st.pyplot(get_corr_heatmap(data))
 
-st.sidebar.header("Features:")
+st.sidebar.header("Features")
 if st.sidebar.checkbox("Show Max Tempreature"):
     placeholder.empty()
     st.write("## Cities with High Tempreature")
@@ -393,7 +393,7 @@ if st.sidebar.checkbox("Show Comparisons"):
     st.write("## Max Tempreature vs Evaporation")
     st.pyplot(max_temp_evaporation_plot(data))
 
-st.sidebar.header("Maps:")
+st.sidebar.header("Maps")
 if st.sidebar.checkbox("Show Temp Map"):
     placeholder.empty()
     st.write("## Cities Map with Weather Markers")
@@ -405,7 +405,7 @@ if st.sidebar.checkbox("Show Rainfall Timeseries Map"):
     timeseries_plot = get_rainfall_timeseries_map(map_data)
     folium_static(timeseries_plot)
 
-st.sidebar.header("Rainfall Prediction:")
+st.sidebar.header("Rainfall Prediction")
 if st.sidebar.checkbox("Predict"):
     placeholder.empty()
     rain_tomorrow = get_predictions(saved_model)
