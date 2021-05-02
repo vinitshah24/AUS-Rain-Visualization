@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import folium
+import altair as alt
 
 import numpy as np
 import pandas as pd
@@ -129,6 +130,39 @@ def get_wind_speed_plot(df):
     return plt
 
 
+def get_wind_speed_altair_plot(df):
+    wind_df = df[:1000]
+    wind_df['Date'] = pd.to_datetime(wind_df['Date'])
+    # cols = ["WindSpeed9am", "WindSpeed3pm"]
+    # fig1 = alt.Chart(wind_df).mark_line(
+    #     color='lightgreen'
+    # ).encode(
+    #     x='Date:T',
+    #     y='WindSpeed9am:Q'
+    # )
+    # fig2 = alt.Chart(wind_df).mark_line(
+    #     color='red'
+    # ).encode(
+    #     x='Date:T',
+    #     y='WindSpeed3pm:Q'
+    # )
+    # alt_fig_all = fig1 + fig2
+    # alt_fig_all.properties(
+    #     title='Wind Speed',
+    #     width=600,
+    #     height=400
+    # ).interactive()
+    # return alt_fig_all
+    chart = alt.Chart(wind_df).mark_point().encode(
+        x='Date:T',
+        y='WindGustSpeed:Q',
+    ).properties(
+        width=800,
+        height=400
+    ).interactive()
+    return chart
+
+
 def max_temp_evaporation_plot(df):
     plt.figure(figsize=(5, 5))
     sns.jointplot(data=df, x='MaxTemp', y='Evaporation', bins=100,
@@ -147,6 +181,21 @@ def get_humidity_plot(df):
     plt.legend(loc='upper left')
     plt.title('Humidity9am vs Humidity3pm by Date')
     return plt
+
+
+def get_humidity_altair_plot(df):
+    df = df.iloc[:100]
+    df = df[["Date", "Humidity9am", "Humidity3pm"]]
+    df = df.melt('Date', var_name='name', value_name='value')
+    chart = alt.Chart(df).mark_line().encode(
+        x=alt.X('Date:T'),
+        y=alt.Y('value:Q'),
+        color=alt.Color("name:N")
+    ).properties(
+        width=800,
+        height=400
+    ).interactive()
+    return chart
 
 
 def get_weather_map(map_data):
@@ -316,11 +365,13 @@ if st.sidebar.checkbox("Show Evaporation"):
 if st.sidebar.checkbox("Show Wind Speed"):
     placeholder.empty()
     st.write("## Wind Speed")
-    st.pyplot(get_wind_speed_plot(data))
+    # st.pyplot(get_wind_speed_plot(data))
+    st.altair_chart(get_wind_speed_altair_plot(data))
 if st.sidebar.checkbox("Show Humidity"):
     placeholder.empty()
-    st.write("## Wind Humidity")
-    st.pyplot(get_humidity_plot(data))
+    st.write("## Humidity")
+    # st.pyplot(get_humidity_plot(data))
+    st.altair_chart(get_humidity_altair_plot(data))
 if st.sidebar.checkbox("Show Comparisons"):
     placeholder.empty()
     st.write("## Max Tempreature vs Evaporation")
