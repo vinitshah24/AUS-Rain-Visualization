@@ -9,6 +9,7 @@ import seaborn as sns
 import plotly.express as px
 import folium
 import altair as alt
+from windrose import WindroseAxes
 
 import numpy as np
 import pandas as pd
@@ -198,6 +199,17 @@ def get_humidity_altair_plot(df):
     return chart
 
 
+def get_wind_dir_plot(df):
+    ws = df['WindGustSpeed'].to_numpy()
+    wd = df['WindGustDir_cat'].to_numpy() * 16
+    ax = WindroseAxes.from_ax()
+    ax.set_xticklabels(['N', 'NW',  'W', 'SW', 'S', 'SE', 'E', 'NE'])
+    ax.set_theta_zero_location('N')
+    ax.bar(wd, ws, normed=True, opening=0.8, edgecolor='white')
+    ax.set_legend()
+    return plt
+
+
 def get_weather_map(map_data):
     date = map_data["Date"]
     date_choice = st.selectbox("Select date:", date)
@@ -372,6 +384,10 @@ if st.sidebar.checkbox("Show Humidity"):
     st.write("## Humidity")
     # st.pyplot(get_humidity_plot(data))
     st.altair_chart(get_humidity_altair_plot(data))
+if st.sidebar.checkbox("Show Wind Directions"):
+    placeholder.empty()
+    st.write("## Wind Directions")
+    st.pyplot(get_wind_dir_plot(data))
 if st.sidebar.checkbox("Show Comparisons"):
     placeholder.empty()
     st.write("## Max Tempreature vs Evaporation")
